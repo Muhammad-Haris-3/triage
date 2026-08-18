@@ -9,6 +9,7 @@ than a rule you could write in one line of SQL.
 It does not. The interesting part is what that took to establish, and what almost
 concealed it.
 
+[Decision memo](docs/decision_memo.md) (2 pages, no technical background needed) ·
 [Decision to kill, in full](Triage_M0_Summary.md) ·
 [The bar, set beforehand](Triage_SRS_v1.0.md) ·
 [The one declared retry](PREREGISTRATION_M0_amendment.md)
@@ -188,3 +189,4 @@ happens.
 | [`Triage_M0_Spec.md`](Triage_M0_Spec.md) | The milestone that answers one question and stops |
 | [`PREREGISTRATION_M0_amendment.md`](PREREGISTRATION_M0_amendment.md) | The single declared retry |
 | [`Triage_M0_Summary.md`](Triage_M0_Summary.md) | Every measurement, both runs, what broke, the decision |
+| [`docs/decision_memo.md`](docs/decision_memo.md) | Two pages for a non-technical reader: what to change, and what not to buy |
