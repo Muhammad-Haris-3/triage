@@ -108,20 +108,32 @@ methods = {
 rank_cols = {m: ranks(s, SEED + i) for i, (m, s) in enumerate(methods.items())}
 
 # ------------------------------------------------------------ comparison curve
-KS = [10, 25, 50, 75, 100, 150, 200, 300, 400, 500, 750, 1000, 1500, 2000]
-def captured(score, k, draws=200, seed=SEED):
+# Captured@k for EVERY k in 1..KMAX, tie-averaged, in one pass per draw:
+# a cumulative sum along each drawn ordering IS the captured-count curve.
+KMAX = 2000
+
+def curve(score, draws=200, seed=SEED):
     r = np.random.default_rng(seed)
     y, s = te.y.values, np.asarray(score, dtype=float)
-    return float(np.mean([y[np.lexsort((r.random(len(s)), -s))[:k]].sum() for _ in range(draws)]))
+    acc = np.zeros(KMAX)
+    for _ in range(draws):
+        acc += np.cumsum(y[np.lexsort((r.random(len(s)), -s))[:KMAX]])
+    return acc / draws
 
-def captured_random(k, draws=2000, seed=SEED):
-    r = np.random.default_rng(seed); y = te.y.values
-    return float(np.mean([y[r.permutation(len(y))[:k]].sum() for _ in range(draws)]))
+def curve_random(draws=2000, seed=SEED):
+    """Random redraws the SELECTION, not the tie-break — see METHODS 6.1."""
+    r = np.random.default_rng(seed)
+    y, n = te.y.values, len(te)
+    acc = np.zeros(KMAX)
+    for _ in range(draws):
+        acc += np.cumsum(y[r.permutation(n)[:KMAX]])
+    return acc / draws
 
-comparison = {m: {str(k): captured(s, k) for k in KS} for m, s in methods.items()}
-comparison["random"] = {str(k): captured_random(k) for k in KS}   # corrected
-print(f"\ncaptured@200 — " + "  ".join(
-    f"{m}:{comparison[m]['200']:.1f}" for m in methods))
+curves = {m: curve(s) for m, s in methods.items()}
+curves["random"] = curve_random()
+comparison = {m: [round(float(v), 4) for v in c] for m, c in curves.items()}
+print("\ncaptured@50  — " + "  ".join(f"{m}:{curves[m][49]:.1f}" for m in curves))
+print("captured@200 — " + "  ".join(f"{m}:{curves[m][199]:.1f}" for m in curves))
 
 # ---------------------------------------------------------------- patient rows
 with open(OUT / "patients.jsonl", "w", encoding="utf-8") as fh:
@@ -165,5 +177,10 @@ json.dump({
                     "brier_base_rate_only": round(float(brier_base), 5)},
     "odds_ratios": odds,
 }, open(OUT / "evidence.json", "w"), indent=1)
-json.dump(comparison, open(OUT / "comparison.json", "w"), indent=1)
-print("wrote comparison.json, evidence.json")
+json.dump({"kmax": KMAX, "captured": comparison}, open(OUT / "comparison.json", "w"))
+print(f"wrote comparison.json (curves 1..{KMAX}), evidence.json")
+
+# sanity: the curve must agree with the published M0 figures at k=200
+assert abs(curves["prior_admissions"][199] - 88.9) < 0.15, curves["prior_admissions"][199]
+assert abs(curves["model"][199] - 94.0) < 0.15, curves["model"][199]
+print("curve agrees with M0 at k=200: prior_admissions 88.9, model 94.0  OK")
