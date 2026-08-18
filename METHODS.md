@@ -18,6 +18,7 @@ an appendix is a sales document.
 | A probe loop reused one output filename across two URLs; the second returned 404, overwriting the real archive. The manifest recorded a checksum for a **9-byte error page** | The reproducibility guarantee would have verified against an error page | Printing the byte count beside the digest |
 | The M0 spec asserted every excluded row must show ~0% readmission. Hospice codes show **4.8%** and **6.5%** | An unexamined assumption would have stayed in the spec, wrongly justifying a correct exclusion | The per-code breakdown in M0-T3, which existed only because the spec demanded the exclusion validate itself |
 | The dataset's documented archive URL returns 404 | Reproduction instructions would not work for anyone else | Attempting the download |
+| The random baseline averaged **one draw with itself** 200 times, because a continuous random score has no ties to break. It reported 28.0 captured at k=200 against a true expectation of 23.2 | The published claim "age is indistinguishable from random" was an artefact of one lucky draw. Corrected to "age is barely better than chance" across the README, memo and M0 summary | Building the M1 comparison export, where the random column had to be stable across page loads |
 
 Each is written up in [`Triage_M0_Summary.md`](Triage_M0_Summary.md) §4,
 including the ones that make the work look careless.
@@ -188,7 +189,7 @@ in any metric.
 | **B1** | `number_inpatient` descending — **primary** |
 | B2 | Age band descending (lower bound of the bracket) |
 | B3 | `time_in_hospital` descending |
-| B4 | Uniform random |
+| B4 | Uniform random, averaged over 2,000 independent selections (§6.1) |
 
 `number_inpatient` is a small integer, so ties at the k=200 cutoff are heavy.
 Ties are broken **uniformly at random and averaged over 200 draws**:
@@ -201,7 +202,25 @@ The rule was fixed in `Triage_M0_Spec.md` before any baseline was computed.
 Giving B1 its worst-case ordering would have manufactured a lift out of a
 convention.
 
-**Note:** tie-breaking affects only the baselines. Model scores are continuous
+### 6.1 The random baseline is resampled, not tie-broken
+
+A continuous random score has **no ties**, so averaging tie-break draws over one
+fixed random vector averages a single draw with itself. The first version of this
+analysis did exactly that and reported 28.0 captured at k=200 — one lucky draw,
+against a true expectation of 23.2 (200 x 11.61%).
+
+`captured_random` now redraws the *selection* 2,000 times:
+
+```python
+np.mean([y[rng.permutation(n)[:k]].sum() for _ in range(2000)])
+```
+
+giving 23.2 at k=200, 95% range [14, 32]. Age captures 28.2 with range [21, 36];
+**12.5% of random draws beat age's mean.** Age is better than chance, but not by
+much, and the earlier claim that the two were indistinguishable was an artefact
+of the bug, not a finding.
+
+**Note:** tie-breaking affects only the *ordered* baselines. Model scores are continuous
 floats with no ties, so all 200 draws return an identical count — which is why
 the model's figures are whole numbers (94.0, 84.0) and B1's are not (88.9).
 

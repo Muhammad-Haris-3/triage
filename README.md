@@ -27,16 +27,17 @@ column, no model — captured **88.9** of the patients who actually returned wit
 **Lift: 1.06x, 95% CI [0.92, 1.23].** The interval spans 1.0. Five extra patients
 out of 200, indistinguishable from noise.
 
-**2. The obvious baseline is worthless, and would have made the model look
-excellent.**
+**2. The obvious baseline is nearly worthless, and would have made the model
+look excellent.**
 
 Hospitals typically target follow-up by age. In this data, age captures **28.2**
-patients out of 200. Random selection captures **28.0**.
+patients out of 200. Random selection captures **23.2**.
 
-Age is indistinguishable from choosing at random. Benchmarked against it, the
-model shows a **3.33x** improvement — a headline that would have been entirely
-true and entirely meaningless, because sorting by prior admissions gets 3.15x of
-it without any model at all.
+Age is barely better than chance, and the two overlap heavily — 12.5% of random
+draws beat age outright. Benchmarked against it, the model shows a **3.33x**
+improvement: a headline that would have been entirely true and entirely
+meaningless, because sorting by prior admissions gets 3.15x of it without any
+model at all.
 
 **3. Adding better features raised AUC and made the decision worse.**
 
@@ -93,7 +94,7 @@ averaged over 200 draws:
 
 | Method | k=50 | k=100 | **k=200** | k=500 | k=1000 |
 |---|---|---|---|---|---|
-| Random | 9.0 | 15.0 | 28.0 | 68.0 | 126.0 |
+| Random *(2,000 draws)* | 5.8 | 11.6 | 23.2 | 58.0 | 115.8 |
 | Age band | 7.1 | 14.4 | 28.2 | 70.8 | 133.4 |
 | Length of stay | 7.8 | 15.0 | 30.1 | 67.1 | 122.3 |
 | **Prior admissions** | 25.8 | 51.3 | **88.9** | 183.9 | 300.0 |

@@ -1,0 +1,87 @@
+{
+ "test_encounters": 19765,
+ "test_patients": 13998,
+ "test_events": 2295,
+ "base_rate": 0.11611434353655452,
+ "m0": {
+  "lift200": 1.0574273018729963,
+  "ci": [
+   0.9237912087912088,
+   1.229733612923268
+  ],
+  "auc_gbm": 0.6679836582600985,
+  "auc_gbm_with_diagnosis": 0.6731,
+  "captured200_gbm": 94.0,
+  "captured200_gbm_with_diagnosis": 84.0,
+  "captured200_prior_admissions": 88.9
+ },
+ "amendment": {
+  "lift200": 0.945,
+  "ci": [
+   0.83,
+   1.17
+  ]
+ },
+ "calibration": {
+  "mean_predicted": [
+   0.0682,
+   0.0778,
+   0.0846,
+   0.0908,
+   0.0962,
+   0.102,
+   0.1099,
+   0.1213,
+   0.1408,
+   0.2357
+  ],
+  "observed": [
+   0.0622,
+   0.0668,
+   0.0814,
+   0.085,
+   0.1032,
+   0.1083,
+   0.1058,
+   0.1462,
+   0.1609,
+   0.2413
+  ],
+  "brier": 0.09949,
+  "brier_base_rate_only": 0.10264
+ },
+ "odds_ratios": {
+  "number_inpatient": {
+   "odds_ratio": 1.4005592387822352,
+   "coef": 0.3368716131328212
+  },
+  "number_emergency": {
+   "odds_ratio": 1.0249271656084806,
+   "coef": 0.024621552122690498
+  },
+  "number_outpatient": {
+   "odds_ratio": 0.9907673424915688,
+   "coef": -0.00927554265745626
+  },
+  "time_in_hospital": {
+   "odds_ratio": 1.078487826890317,
+   "coef": 0.07555989970902788
+  },
+  "num_medications": {
+   "odds_ratio": 1.0595167518502437,
+   "coef": 0.05781290969158974
+  },
+  "number_diagnoses": {
+   "odds_ratio": 1.124264259666412,
+   "coef": 0.11712883030308488
+  },
+  "num_lab_procedures": {
+   "odds_ratio": 1.0136622807433544,
+   "coef": 0.013569793227248654
+  },
+  "num_procedures": {
+   "odds_ratio": 0.9476556981892043,
+   "coef": -0.0537640302598223
+  }
+ }
+}

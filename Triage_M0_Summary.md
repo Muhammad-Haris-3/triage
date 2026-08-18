@@ -118,25 +118,30 @@ an unknown amount with no visible symptom.
 
 ### 3.5 VER-4 — the baselines
 
-Test set, k varied, random tie-breaking averaged over 200 draws (tie rule fixed
-before computing, per M0-T5):
+Test set, k varied. Ordered baselines use random tie-breaking averaged over 200
+draws (rule fixed before computing, per M0-T5). The random baseline redraws the
+*selection* 2,000 times — see METHODS §6.1 for why the first version of this was
+wrong.
 
 | Method | k=50 | k=100 | **k=200** | k=500 | k=1000 |
 |---|---|---|---|---|---|
 | **B1 `number_inpatient`** | 25.8 | 51.3 | **88.9** | 183.9 | 300.0 |
 | B2 age band | 7.1 | 14.4 | 28.2 | 70.8 | 133.4 |
 | B3 `time_in_hospital` | 7.8 | 15.0 | 30.1 | 67.1 | 122.3 |
-| B4 random | 9.0 | 15.0 | 28.0 | 68.0 | 126.0 |
+| B4 random *(2,000 draws)* | 5.8 | 11.6 | 23.2 | 58.0 | 115.8 |
 
 **B1 captures 88.9 of 200 — precision 44.4% against an 11.61% base rate.**
 
 Two things are visible here and both matter:
 
 - **B1 is a strong rule.** Sorting one integer column beats random selection by
-  3.2x. SRS §3.1 predicted this; the measurement confirms it.
-- **B2 (age) is indistinguishable from random.** 28.2 versus 28.0. Age, the rule
-  hospitals actually use, carries essentially no information about 30-day
-  readmission in this dataset.
+  **3.8x** (88.9 against 23.2). SRS §3.1 predicted this; the measurement
+  confirms it.
+- **B2 (age) is barely better than random.** 28.2 versus 23.2, with heavily
+  overlapping ranges — 12.5% of random draws beat age's mean. Age, the rule
+  hospitals actually use, carries very little information about 30-day
+  readmission in this dataset, and less than a third of what prior admissions
+  carries.
 
 ### 3.6 VER-5 — the model
 

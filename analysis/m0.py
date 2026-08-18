@@ -74,6 +74,14 @@ def captured_at_k(score, y, k, n_draws=200, seed=SEED):
         out.append(y[order[:k]].sum())
     return float(np.mean(out))
 
+def captured_random(y, k, draws=2000, seed=SEED):
+    """Random selection: redraw the SELECTION each time, not the tie-break.
+    A continuous random score has no ties, so averaging tie-breaks over one
+    fixed score vector averages a single draw with itself. Corrected 2026-08-19."""
+    rng = np.random.default_rng(seed)
+    y = np.asarray(y); n = len(y)
+    return float(np.mean([y[rng.permutation(n)[:k]].sum() for _ in range(draws)]))
+
 # ---------------- M0-T5  baselines (VER-4) ----------------
 print("\n" + "=" * 68)
 print("M0-T5  BASELINES  (test set, random tie-break averaged over 200 draws)")
@@ -82,16 +90,16 @@ baselines = {
     "B1 number_inpatient": te.number_inpatient.values.astype(float),
     "B2 age band":         te.age.map(lambda a: int(str(a).split("-")[0].strip("[")) ).values.astype(float),
     "B3 time_in_hospital": te.time_in_hospital.values.astype(float),
-    "B4 random":           None,
 }
 res = {}
 print(f"{'method':22s}" + "".join(f"{('k='+str(k)):>10s}" for k in KS))
 for name, sc in baselines.items():
-    if sc is None:
-        sc = rng_global.random(len(te))
     row = [captured_at_k(sc, te.y.values, k) for k in KS]
     res[name] = row
     print(f"{name:22s}" + "".join(f"{v:>10.1f}" for v in row))
+res["B4 random"] = [captured_random(te.y.values, k) for k in KS]
+baselines["B4 random"] = None
+print(f"{'B4 random (2000 draws)':22s}" + "".join(f"{v:>10.1f}" for v in res["B4 random"]))
 
 b1_200 = res["B1 number_inpatient"][KS.index(200)]
 print(f"\nBar to beat: B1 captures {b1_200:.1f} true readmissions in its top 200  [VER-4]")

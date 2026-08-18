@@ -12,17 +12,17 @@ admissions, and do not commission a predictive model
 
 Our follow-up team can call about 200 patients a month. We choose them by age.
 
-**Age tells us nothing.** Out of 200 patients chosen by age, about **28** were
-actually readmitted within 30 days. Out of 200 chosen completely at random, about
-**28** were readmitted. Those are the same number. We are, in effect, picking
-names out of a hat.
+**Age tells us almost nothing.** Out of 200 patients chosen by age, about **28**
+were actually readmitted within 30 days. Out of 200 chosen completely at random,
+about **23** were. Age buys us five patients over picking names out of a hat, and
+the two overlap so heavily that a lucky random draw beats age one time in eight.
 
 There is one piece of information already in every patient record that does far
 better: **how many times the patient has been admitted in the past year.**
 
 | Out of every 200 patients we call | Actually readmitted within 30 days |
 |---|---|
-| Chosen at random | 28 |
+| Chosen at random | 23 |
 | Chosen by age *(what we do now)* | 28 |
 | Chosen by length of stay | 30 |
 | **Chosen by prior admissions** | **89** |
@@ -114,8 +114,8 @@ different at 20 or at 2,000, and would need re-running.
 
 ## In one line
 
-We are choosing follow-up patients by a rule that performs no better than chance,
-when a column already in the record does three times better — and the expensive
+We are choosing follow-up patients by a rule that performs barely better than
+chance, when a column already in the record does three times better — and the expensive
 solution everyone would reach for adds nothing we can measure.
 
 *Full method, code and measurements: [Triage repository](../README.md).*
