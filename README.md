@@ -9,6 +9,7 @@ than a rule you could write in one line of SQL.
 It does not. The interesting part is what that took to establish, and what almost
 concealed it.
 
+**[Try it](https://triage-brown.vercel.app)** — set a capacity, see what each method catches ·
 [Decision memo](docs/decision_memo.md) (2 pages, no technical background needed) ·
 [Decision to kill, in full](Triage_M0_Summary.md) ·
 [The bar, set beforehand](Triage_SRS_v1.0.md) ·
@@ -171,6 +172,22 @@ Full parameters, and the limits of what these numbers support, are in
 
 ---
 
+## The application
+
+[**triage-brown.vercel.app**](https://triage-brown.vercel.app) — Next.js on Vercel,
+FastAPI on Render, PostgreSQL on Neon. All free tier.
+
+Set a capacity and the comparison recomputes. The patient list is served from
+**prior admissions**, the method that measurably performed best — not from the
+model. Where the model appears it carries its measured lift and interval, because
+its point estimate is higher and reading that number alone is the mistake this
+project is about.
+
+The API sleeps when idle on its free tier, so the first request after a quiet
+period takes 30–50 seconds. The interface says so rather than looking broken.
+
+---
+
 ## Provenance
 
 The repository was initialised **after** M0 completed. Commit order reflects
@@ -195,3 +212,5 @@ happens.
 | [`Triage_M0_Summary.md`](Triage_M0_Summary.md) | Every measurement, both runs, what broke, the decision |
 | [`docs/decision_memo.md`](docs/decision_memo.md) | Two pages for a non-technical reader: what to change, and what not to buy |
 | [`METHODS.md`](METHODS.md) | Every parameter, every failure, and what cannot be claimed |
+| [`Triage_M1_Spec.md`](Triage_M1_Spec.md) | The application, re-scoped around the comparison after the kill |
+| [`Triage_M1_Summary.md`](Triage_M1_Summary.md) | What was built and deployed, and the seven things that broke |
