@@ -1,0 +1,5 @@
+# Render's default build command runs `pip install -r requirements.txt` from the
+# repository root. The real dependency list lives in api/requirements.txt; this
+# file forwards to it so the default build command works without any dashboard
+# configuration. Edit api/requirements.txt, not this file.
+-r api/requirements.txt
