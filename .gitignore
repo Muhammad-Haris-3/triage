@@ -4,3 +4,9 @@ analysis/IDS_mapping.csv
 analysis/diabetic_data.csv
 __pycache__/
 *.pyc
+.env
+.env.*
+!.env.example
+node_modules/
+.next/
+.vercel
