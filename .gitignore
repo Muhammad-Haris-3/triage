@@ -1,0 +1,6 @@
+analysis/data.csv
+analysis/*.zip
+analysis/IDS_mapping.csv
+analysis/diabetic_data.csv
+__pycache__/
+*.pyc
