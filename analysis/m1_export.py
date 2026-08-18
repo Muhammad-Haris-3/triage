@@ -60,15 +60,30 @@ print(f"GBM reproduced: AUC {roc_auc_score(te.y.values, p_gbm):.4f}  (M0: 0.6680
 EXPLAIN = ["number_inpatient", "number_emergency", "number_outpatient",
            "time_in_hospital", "num_medications", "number_diagnoses",
            "num_lab_procedures", "num_procedures"]
-LABEL = {
+# Two phrasings per factor. Which one is used depends on the SIGN of the
+# fitted coefficient, not on the value: a factor with an odds ratio below 1 is
+# protective, so it contributes to risk when it is LOW. Rendering "0 outpatient
+# visits" as a risk factor is arithmetically right and reads as a bug, so the
+# protective factors get their own wording.
+LABEL_HIGH = {
     "number_inpatient":   "{v:.0f} hospital admission(s) in the past year",
     "number_emergency":   "{v:.0f} emergency visit(s) in the past year",
     "number_outpatient":  "{v:.0f} outpatient visit(s) in the past year",
     "time_in_hospital":   "{v:.0f} day(s) in hospital this stay",
-    "num_medications":    "{v:.0f} medications",
+    "num_medications":    "on {v:.0f} medications",
     "number_diagnoses":   "{v:.0f} diagnoses recorded",
     "num_lab_procedures": "{v:.0f} lab procedures",
-    "num_procedures":     "{v:.0f} procedures",
+    "num_procedures":     "{v:.0f} procedures this stay",
+}
+LABEL_LOW = {
+    "number_inpatient":   "no prior admissions recorded",
+    "number_emergency":   "no emergency visits recorded",
+    "number_outpatient":  "little or no outpatient follow-up ({v:.0f} visits)",
+    "time_in_hospital":   "short stay ({v:.0f} day(s))",
+    "num_medications":    "few medications ({v:.0f})",
+    "number_diagnoses":   "few diagnoses recorded ({v:.0f})",
+    "num_lab_procedures": "few lab procedures ({v:.0f})",
+    "num_procedures":     "few procedures this stay ({v:.0f})",
 }
 sc = StandardScaler().fit(tr[EXPLAIN].values)
 lr = LogisticRegression(max_iter=2000, random_state=SEED).fit(sc.transform(tr[EXPLAIN].values),
@@ -141,7 +156,8 @@ with open(OUT / "patients.jsonl", "w", encoding="utf-8") as fh:
         top = np.argsort(-contrib[i])[:4]
         reasons = [
             {"factor": EXPLAIN[j],
-             "text": LABEL[EXPLAIN[j]].format(v=te[EXPLAIN[j]].iloc[i]),
+             "text": (LABEL_HIGH if lr.coef_[0][j] > 0 else LABEL_LOW)[EXPLAIN[j]]
+                     .format(v=te[EXPLAIN[j]].iloc[i]),
              "weight": float(contrib[i][j])}
             for j in top if contrib[i][j] > 0
         ]

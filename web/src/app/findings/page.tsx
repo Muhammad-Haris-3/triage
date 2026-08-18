@@ -41,7 +41,7 @@ export default function Findings() {
             <p className="small" style={{ marginTop: 12, marginBottom: 0 }}>
               Caught in the top 200. Lift ={" "}
               <strong className="num">{e.m0.lift200.toFixed(2)}×</strong>, 95% confidence
-              interval <strong className="num">[{e.m0.ci[0]}, {e.m0.ci[1]}]</strong>. The
+              interval <strong className="num">[{e.m0.ci[0].toFixed(2)}, {e.m0.ci[1].toFixed(2)}]</strong>. The
               interval includes 1.0, so five extra patients out of 200 cannot be told
               apart from noise.
             </p>

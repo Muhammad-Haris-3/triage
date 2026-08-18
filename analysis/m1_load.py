@@ -5,7 +5,7 @@ the read-only application role and writes its connection string into .env.
 
 Never prints a credential. Run:  python analysis/m1_load.py
 """
-import io, json, os, secrets, sys
+import argparse, io, json, os, secrets, sys
 from pathlib import Path
 from urllib.parse import urlparse, urlunparse
 
@@ -29,7 +29,7 @@ def env(path=ROOT / ".env"):
     return out
 
 
-def main():
+def main(rotate: bool = False):
     cfg = env()
     if "DATABASE_URL" not in cfg:
         sys.exit("DATABASE_URL missing from .env")
@@ -82,21 +82,29 @@ def main():
             # ---- read-only application role (SRS: application role SELECT only) ----
             cur.execute("SELECT 1 FROM pg_roles WHERE rolname = %s", (APP_ROLE,))
             fresh = cur.fetchone() is None
-            pw = secrets.token_urlsafe(24)
+            # Only mint a password when the role is new, or when rotation is
+            # asked for explicitly. Rotating on every load silently invalidates
+            # the value already configured in the deployed service, which turns
+            # a routine data refresh into an outage.
+            existing = env().get("APP_DATABASE_URL")
+            reuse = (not fresh) and (not rotate) and bool(existing)
+            pw = urlparse(existing).password if reuse else secrets.token_urlsafe(24)
             # CREATE/ALTER ROLE are utility statements: they do not accept bind
             # parameters. The password is composed as a quoted SQL literal
             # instead, which psycopg escapes — never by string concatenation.
             role = sql.Identifier(APP_ROLE)
             dbname = sql.Identifier(urlparse(cfg["DATABASE_URL"]).path.lstrip("/"))
-            verb = sql.SQL("CREATE" if fresh else "ALTER")
-            cur.execute(sql.SQL("{} ROLE {} WITH LOGIN PASSWORD {}").format(
-                verb, role, sql.Literal(pw)))
+            if not reuse:
+                verb = sql.SQL("CREATE" if fresh else "ALTER")
+                cur.execute(sql.SQL("{} ROLE {} WITH LOGIN PASSWORD {}").format(
+                    verb, role, sql.Literal(pw)))
             cur.execute(sql.SQL("GRANT CONNECT ON DATABASE {} TO {}").format(dbname, role))
             cur.execute(sql.SQL("GRANT USAGE ON SCHEMA public TO {}").format(role))
             cur.execute(sql.SQL("GRANT SELECT ON ALL TABLES IN SCHEMA public TO {}").format(role))
             cur.execute(sql.SQL(
                 "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO {}").format(role))
-            print(f"  role {APP_ROLE}: {'created' if fresh else 'password rotated'}, SELECT only")
+            state = "created" if fresh else ("password rotated" if rotate else "reused, password unchanged")
+            print(f"  role {APP_ROLE}: {state}, SELECT only")
 
         conn.commit()
 
@@ -124,4 +132,8 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--rotate", action="store_true",
+                    help="mint a new app password. Requires updating the deployed "
+                         "service's APP_DATABASE_URL afterwards.")
+    main(**vars(ap.parse_args()))

@@ -100,7 +100,7 @@ export default function ListPage() {
                     <td>{p.age_band}</td>
                     <td className="num">{p.number_inpatient}</td>
                     <td className="num">{p.time_in_hospital}</td>
-                    <td className="num">{p.risk}%</td>
+                    <td className="num">{p.risk.toFixed(1)}%</td>
                     <td className="small">{p.reasons.slice(0, 2).join(" · ") || "—"}</td>
                     <td>
                       <span className={p.readmitted_30d ? "tag" : "tag no"}>
