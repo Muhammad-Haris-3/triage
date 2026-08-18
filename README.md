@@ -165,6 +165,9 @@ Requires `pandas`, `scikit-learn`, `numpy`. Seed pinned at 42; the source is
 pinned by checksum in [`data/MANIFEST.json`](data/MANIFEST.json). Every number
 above comes out of those two scripts.
 
+Full parameters, and the limits of what these numbers support, are in
+[`METHODS.md`](METHODS.md) — read §1 first.
+
 ---
 
 ## Provenance
@@ -190,3 +193,4 @@ happens.
 | [`PREREGISTRATION_M0_amendment.md`](PREREGISTRATION_M0_amendment.md) | The single declared retry |
 | [`Triage_M0_Summary.md`](Triage_M0_Summary.md) | Every measurement, both runs, what broke, the decision |
 | [`docs/decision_memo.md`](docs/decision_memo.md) | Two pages for a non-technical reader: what to change, and what not to buy |
+| [`METHODS.md`](METHODS.md) | Every parameter, every failure, and what cannot be claimed |
