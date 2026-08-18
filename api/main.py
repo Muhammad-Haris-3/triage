@@ -68,7 +68,10 @@ app = FastAPI(
 )
 app.add_middleware(
     CORSMiddleware,
-    allow_origin_regex=r"https://.*\.vercel\.app|http://localhost:3000",
+    # Starlette fullmatches this against the Origin header, so the alternation
+    # is anchored implicitly. Covers Vercel deployments plus local development
+    # on either loopback name and any port.
+    allow_origin_regex=r"https://[A-Za-z0-9._-]+\.vercel\.app|http://(localhost|127\.0\.0\.1)(:\d+)?",
     allow_methods=["GET"],
     allow_headers=["*"],
 )

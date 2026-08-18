@@ -82,3 +82,17 @@ def test_api_role_cannot_write(client):
 
 def test_unknown_method_404s(client):
     assert client.get("/selection?k=10&method=nonsense").status_code == 404
+
+
+@pytest.mark.parametrize("origin,allowed", [
+    ("https://triage.vercel.app", True),
+    ("https://triage-abc123.vercel.app", True),
+    ("http://localhost:3000", True),
+    ("http://127.0.0.1:3111", True),
+    ("https://evil.example.com", False),
+    ("https://vercel.app.evil.com", False),
+])
+def test_cors_origins(client, origin, allowed):
+    r = client.get("/health", headers={"Origin": origin})
+    got = r.headers.get("access-control-allow-origin")
+    assert (got == origin) is allowed, f"{origin} -> {got}"
