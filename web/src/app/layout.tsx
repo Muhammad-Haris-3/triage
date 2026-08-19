@@ -1,35 +1,47 @@
 import type { Metadata } from "next";
+import { IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import Nav from "@/components/Nav";
 
+const sans = IBM_Plex_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-sans",
+  display: "swap",
+});
+const mono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-mono",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
-  title: "Triage — what each way of choosing gets you",
+  title: "Triage — a model that could not beat counting",
   description:
     "A hospital can follow up with a few hundred discharged patients a month. Which few hundred? Measured on 19,765 held-out records.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${sans.variable} ${mono.variable}`}>
       <body>
-        <Nav />
-        <main className="wrap">{children}</main>
-        <footer className="site">
-          <div className="wrap">
-            <p>
-              Data: 130 US hospitals, 1999–2008 (UCI dataset 296, CC-BY 4.0).
-              Nothing here describes any hospital operating today.
-            </p>
-            <p>
-              This is a demonstration of a targeting method. It is{" "}
-              <strong>not clinical decision support</strong> and must not inform
-              anyone&rsquo;s care.
-            </p>
-            <p style={{ marginTop: 12 }}>
-              <a href="https://github.com/Muhammad-Haris-3/triage">Source, methods and measurements</a>
-            </p>
-          </div>
-        </footer>
+        <div className="shell">
+          <Nav />
+          <main className="wrap">{children}</main>
+          <footer className="site">
+            <div className="inner">
+              <span style={{ maxWidth: "52ch" }}>
+                Diabetes 130-US Hospitals, 1999&ndash;2008 · CC-BY 4.0 · seed pinned at 42 ·
+                every figure reproducible from two scripts. Not clinical decision support.{" "}
+                <a href="https://github.com/Muhammad-Haris-3/triage">Source and methods</a>.
+              </span>
+              <span className="mono" style={{ fontSize: ".62rem", letterSpacing: ".18em", textTransform: "uppercase" }}>
+                Triage · negative result, published
+              </span>
+            </div>
+          </footer>
+        </div>
       </body>
     </html>
   );

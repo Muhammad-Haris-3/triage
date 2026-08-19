@@ -12,19 +12,19 @@ const LINKS = [
 export default function Nav() {
   const path = usePathname();
   return (
-    <header className="site">
-      <div className="inner">
-        <Link href="/" className="brand">
-          Triage<span>readmission targeting</span>
+    <nav className="site">
+      <Link href="/" className="brand">
+        <b>Triage</b>
+        <i>readmission targeting</i>
+      </Link>
+      {LINKS.map((l) => (
+        <Link key={l.href} href={l.href} className={`tab${path === l.href ? " on" : ""}`}>
+          {l.label}
+          <span />
         </Link>
-        <nav>
-          {LINKS.map((l) => (
-            <Link key={l.href} href={l.href} className={path === l.href ? "on" : ""}>
-              {l.label}
-            </Link>
-          ))}
-        </nav>
-      </div>
-    </header>
+      ))}
+      <div className="spacer" />
+      <div className="held">held out · 19,765 discharges</div>
+    </nav>
   );
 }

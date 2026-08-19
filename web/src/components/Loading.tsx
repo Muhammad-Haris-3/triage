@@ -10,11 +10,13 @@ export default function Loading() {
   }, []);
   return (
     <div className="load">
-      <span className="dots">Loading</span>
+      <span className="mono" style={{ letterSpacing: ".18em", textTransform: "uppercase", fontSize: ".7rem" }}>
+        loading measurements…
+      </span>
       {slow && (
-        <p className="small" style={{ marginTop: 12, maxWidth: 460 }}>
-          The API sleeps when idle on its free tier, so the first request after a
-          quiet period takes 30–50 seconds to wake it. Nothing is broken.
+        <p className="small" style={{ marginTop: 16, maxWidth: "46ch" }}>
+          The API sleeps when idle on its free tier, so the first request after a quiet
+          period takes 30&ndash;50 seconds to wake it. Nothing is broken.
         </p>
       )}
     </div>
